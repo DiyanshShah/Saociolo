@@ -5,20 +5,7 @@ import { SignedOut, SignInButton, SignUpButton, SignedIn, UserButton } from "@cl
 export default function Home() {
   return (
     <div className="m-4">
-      <SignedOut>
-        <SignInButton mode="modal">
-          <Button>
-            Sign In
-          </Button>
-        </SignInButton>
-
-      </SignedOut>
-
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
-      <ModeToggle/>
-      <Button variant={"secondary"}>Click me</Button>
+      <h1>Home Page</h1>
     </div>
   );
 }
