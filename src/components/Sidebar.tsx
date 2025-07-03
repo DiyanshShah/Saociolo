@@ -1,23 +1,22 @@
-import { currentUser } from '@clerk/nextjs/server';
-import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { currentUser } from "@clerk/nextjs/server";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { SignInButton, SignUpButton } from "@clerk/nextjs";
+import { Button } from "./ui/button";
+import { getUserByClerkId } from "@/actions/user.action";
+import Link from "next/link";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import { SignInButton, SignUpButton } from '@clerk/nextjs';
-import { Button } from './ui/button';
-import { getUserByClerkId } from '@/actions/user.action';
-import Link from 'next/link';
-import { Separator } from "@/components/ui/separator"
-import { LinkIcon, MapPinIcon } from 'lucide-react';
+import { Separator } from "./ui/separator";
+import { LinkIcon, MapPinIcon } from "lucide-react";
 
-const Sidebar = async () => {
-    const authUser = await currentUser();
-    if(!authUser) return <UnAuthenticatedSidebar />
+async function Sidebar() {
+  const authUser = await currentUser();
+  if (!authUser) return <UnAuthenticatedSidebar />;
 
-    const user = await getUserByClerkId(authUser.id);
-    if(!user) return null;
-    console.log({ user });
+  const user = await getUserByClerkId(authUser.id);
+  if (!user) return null;
+
   return (
-    <div className='sticky top-20'>
+    <div className="sticky top-20">
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col items-center text-center">
@@ -26,7 +25,7 @@ const Sidebar = async () => {
               className="flex flex-col items-center justify-center"
             >
               <Avatar className="w-20 h-20 border-2 ">
-                <AvatarImage src={user.image || "/avatar.png"} />
+                <AvatarImage src={user.image || ""} />
               </Avatar>
 
               <div className="mt-4 space-y-1">
@@ -73,9 +72,10 @@ const Sidebar = async () => {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
+export default Sidebar;
 
 const UnAuthenticatedSidebar = () => (
   <div className="sticky top-20">
@@ -101,5 +101,3 @@ const UnAuthenticatedSidebar = () => (
     </Card>
   </div>
 );
-
-export default Sidebar
