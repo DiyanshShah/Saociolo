@@ -65,7 +65,7 @@
    ```
 
 7. **Open your browser:**
-   Visit [http://localhost:3000](http://localhost:3000)
+   Visit [https://saociolo.vercel.app/](https://saociolo.vercel.app/)
 
 ---
 
