@@ -1,18 +1,20 @@
 "use server";
 
-import { get } from "http";
 import { getDbUserId } from "./user.action";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import DOMPurify from "isomorphic-dompurify";
 
 export async function createPost(content: string, image: string){
     try {
         const userId = await getDbUserId();
         if(!userId) return;
 
+        const sanitizedContent = DOMPurify.sanitize(content);
+
         const post = await prisma.post.create({
             data:{
-                content,
+                content: sanitizedContent,
                 image, 
                 authorId: userId,
             }
@@ -166,9 +168,10 @@ export async function createComment(postId: string, content: string) {
     // Create comment and notification in a transaction
     const [comment] = await prisma.$transaction(async (tx) => {
       // Create comment first
+      const sanitizedContent = DOMPurify.sanitize(content);
       const newComment = await tx.comment.create({
         data: {
-          content,
+          content: sanitizedContent,
           authorId: userId,
           postId,
         },

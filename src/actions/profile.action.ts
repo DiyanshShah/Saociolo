@@ -4,6 +4,7 @@ import {auth} from "@clerk/nextjs/server";
 import {prisma} from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getDbUserId } from "./user.action";
+import DOMPurify from "isomorphic-dompurify";
 
 export async function getProfileByUsername(username: string){
     try {
@@ -153,15 +154,32 @@ export async function updateProfile(formData: FormData) {
     const name = formData.get("name") as string;
     const bio = formData.get("bio") as string;
     const location = formData.get("location") as string;
-    const website = formData.get("website") as string;
+    let website = formData.get("website") as string;
+
+    // Sanitize all inputs
+    const sanitizedName = DOMPurify.sanitize(name);
+    const sanitizedBio = DOMPurify.sanitize(bio);
+    const sanitizedLocation = DOMPurify.sanitize(location);
+    let sanitizedWebsite = DOMPurify.sanitize(website);
+
+    // Validate and format website URL
+    if (sanitizedWebsite) {
+      if (!sanitizedWebsite.startsWith("http://") && !sanitizedWebsite.startsWith("https://")) {
+        sanitizedWebsite = `https://${sanitizedWebsite}`;
+      }
+      // Additional check to prevent javascript: links after sanitization
+      if (!sanitizedWebsite.startsWith("http")) {
+        sanitizedWebsite = ""; // or handle as an error
+      }
+    }
 
     const user = await prisma.user.update({
       where: { clerkId },
       data: {
-        name,
-        bio,
-        location,
-        website,
+        name: sanitizedName,
+        bio: sanitizedBio,
+        location: sanitizedLocation,
+        website: sanitizedWebsite,
       },
     });
 
